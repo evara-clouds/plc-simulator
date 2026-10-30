@@ -1,0 +1,28 @@
+node_modules
+.next
+.env
+prisma/*.db*
+
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+build/
+
+# Environment secrets
+.env*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local databases and generated files
+*.db
+*.sqlite
+*.sqlite3
+
+# OS files
+.DS_Store
