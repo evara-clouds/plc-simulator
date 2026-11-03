@@ -16,6 +16,7 @@ export async function register(fd) {
     password: z.string().min(8).max(100),
   }).safeParse(Object.fromEntries(fd));
   if (!p.success) redirect("/register?error=" + encodeURIComponent("Check details (password min 8 chars)"));
+  if (process.env.SIGNUP_CODE && fd.get("code") !== process.env.SIGNUP_CODE) redirect("/register?error=" + encodeURIComponent("Invalid invite code"));
   if (await prisma.user.findUnique({ where: { email: p.data.email } })) redirect("/register?error=" + encodeURIComponent("Email already registered"));
   await prisma.user.create({ data: { ...p.data, password: await bcrypt.hash(p.data.password, 10) } });
   redirect("/login");
@@ -92,7 +93,7 @@ const NEED = [0, 2, 4];   // failed checks needed before hint 1, hint 2, and the
 
 export async function checkSolution({ problemId, rungs }) {
   const problem = PROBLEMS.find((x) => x.id === problemId);
-  if (!problem || !Array.isArray(rungs)) return { error: "Unknown problem" };
+  if (!problem || !Array.isArray(rungs) || rungs.length > 60 || JSON.stringify(rungs).length > 20000) return { error: "Unknown problem or program too large" };
   let results;
   try { results = runTests(rungs, problem.preset, problem.tests, problem.tags); } catch { return { error: "Could not run the tests" }; }
   const ok = results.every((r) => r.ok);

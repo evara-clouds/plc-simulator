@@ -8,6 +8,7 @@ export default function Register({ searchParams }) {
       <input name="name" placeholder="Name" required className="inp" />
       <input name="email" type="email" placeholder="Email" required className="inp" />
       <input name="password" type="password" placeholder="Password (min 8)" minLength={8} required className="inp" />
+      {process.env.SIGNUP_CODE ? <input name="code" placeholder="Invite code" required className="inp" /> : null}
       <button className="btn w-full">Sign up</button>
       <p className="text-sm text-slate-400">Have an account? <Link href="/login" className="text-cyan-400">Log in</Link></p>
     </form>
