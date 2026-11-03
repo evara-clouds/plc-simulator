@@ -1,9 +1,14 @@
 {
   "name": "plc-simulator",
   "private": true,
-  "scripts": { "dev": "next dev", "build": "next build", "start": "next start" },
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "postinstall": "prisma generate"
+  },
   "dependencies": {
-    "@prisma/client": "5.22.0",
+    "@prisma/client": "^5.22.0",
     "bcryptjs": "2.4.3",
     "next": "14.2.15",
     "next-auth": "4.24.10",
@@ -14,7 +19,7 @@
   "devDependencies": {
     "autoprefixer": "10.4.20",
     "postcss": "8.4.47",
-    "prisma": "5.22.0",
+    "prisma": "^5.22.0",
     "tailwindcss": "3.4.14"
   }
 }
