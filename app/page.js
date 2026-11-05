@@ -66,7 +66,7 @@ export default function Page() {
 
   useEffect(() => {
     if (!run) return;
-    const i = setInterval(() => setTags((p) => stepScene(scan(p, rr.current, preset), cfgRef.current)), 100);
+    const i = setInterval(() => setTags((p) => (document.hidden ? p : stepScene(scan(p, rr.current, preset), cfgRef.current))), 100);
     return () => clearInterval(i);
   }, [run, preset]);
 

@@ -20,8 +20,8 @@ export default async function Community({ searchParams }) {
       include: { user: { select: { name: true } }, _count: { select: { likes: true } } },
     }),
     prisma.post.findMany({
-      orderBy: { createdAt: "desc" },
-      include: { user: { select: { name: true } }, comments: { orderBy: { createdAt: "asc" }, include: { user: { select: { name: true } } } } },
+      orderBy: { createdAt: "desc" }, take: 30,
+      include: { user: { select: { name: true } }, comments: { orderBy: { createdAt: "asc" }, take: 50, include: { user: { select: { name: true } } } } },
     }),
     u ? prisma.like.findMany({ where: { userId: u.id }, select: { projectId: true } }) : [],
   ]);
