@@ -1,7 +1,7 @@
 "use client";
 import { SCENE_OF, SCENES } from "@/lib/scenes";
 const spin = { transformBox: "fill-box", transformOrigin: "center" };
-const SVG = ({ children }) => <svg viewBox="0 0 400 200" className="w-full max-w-3xl">{children}</svg>;
+const SVG = ({ children }) => <svg viewBox="0 0 400 200" className="w-full max-w-xl">{children}</svg>;
 const lit = (on, c = "#22c55e") => (on ? c : "#334155");
 
 const Garage = ({ t }) => (
@@ -29,7 +29,7 @@ const Tank = ({ t, mixer }) => {
   );
 };
 const Line = ({ t }) => {
-  const run = t.M1 || t.M2 || t.M3 || t.MOTOR || t.CONVEYOR_RUN;
+  const run = t.M1 || t.M2 || t.M3 || t.MOTOR;
   return (
     <SVG>
       <rect x="20" y="120" width="360" height="16" rx="8" fill={run ? "#475569" : "#1e293b"} stroke="#64748b" />
@@ -98,29 +98,7 @@ const Poles = ({ t, cfg }) => (
     ))}
   </div>
 );
-const Motor = ({ t }) => (
-  <SVG>
-    <rect x="90" y="70" width="170" height="70" rx="12" fill="#334155" stroke="#94a3b8" strokeWidth="3" />
-    {[110, 130, 150, 170, 190, 210, 230].map((x) => <line key={x} x1={x} x2={x} y1="78" y2="132" stroke="#64748b" strokeWidth="3" />)}
-    <rect x="130" y="140" width="90" height="14" fill="#475569" />
-    <rect x="260" y="98" width="56" height="14" fill="#cbd5e1" />
-    <g style={spin} className={t.MOTOR ? "animate-spin" : ""}><circle cx="340" cy="105" r="26" fill="#475569" stroke="#e2e8f0" strokeWidth="3" /><rect x="316" y="102" width="48" height="6" fill="#e2e8f0" /><rect x="337" y="81" width="6" height="48" fill="#e2e8f0" /></g>
-    <circle cx="55" cy="105" r="13" fill={lit(t.MOTOR)} /><text x="55" y="138" textAnchor="middle" fontSize="12" fill="#94a3b8">{t.MOTOR ? "RUNNING" : "STOPPED"}</text>
-  </SVG>
-);
-const TankV = ({ t }) => {
-  const h = 140, y0 = 30, lv = Math.max(0, Math.min(100, t.TANK_LEVEL || 0));
-  return (
-    <SVG>
-      <rect x="140" y={y0} width="120" height={h} fill="#020617" stroke="#64748b" strokeWidth="4" />
-      <rect x="142" y={y0 + h - (h * lv) / 100} width="116" height={(h * lv) / 100} fill="#06b6d4" opacity=".8" />
-      <rect x="190" y="6" width="20" height="24" fill={lit(t.VALVE)} /><text x="200" y="20" fontSize="9" textAnchor="middle" fill="#020617">IN</text>
-      {"MOTOR" in t && <g style={spin} className={t.MOTOR ? "animate-spin" : ""}><rect x="182" y="100" width="36" height="6" fill="#e2e8f0" /><rect x="197" y="85" width="6" height="36" fill="#e2e8f0" /></g>}
-      <text x="200" y="192" textAnchor="middle" fontSize="12" fill="#94a3b8">level {Math.round(lv)}%</text>
-    </SVG>
-  );
-};
-const VIEW = { motor: Motor, tankv: TankV, garage: Garage, tank: Tank, mixer: (p) => <Tank {...p} mixer />, line: Line, railroad: Railroad, cylinder: Cylinder, compressor: Compressor, pick: Pick };
+const VIEW = { garage: Garage, tank: Tank, mixer: (p) => <Tank {...p} mixer />, line: Line, railroad: Railroad, cylinder: Cylinder, compressor: Compressor, pick: Pick };
 
 function Btn({ k, nc, tog, t, setT }) {
   if (tog) return <button onClick={() => setT((p) => ({ ...p, [k]: !p[k] }))} className={`rounded px-4 py-2 text-sm font-bold ${t[k] ? "bg-emerald-600" : "bg-slate-700"}`}>{k} = {t[k] ? 1 : 0}</button>;
@@ -138,9 +116,7 @@ export default function SceneView({ prob, t, setT }) {
     <div className="space-y-3">
       <div className="flex justify-center rounded-xl border border-slate-800 bg-slate-950 p-3">{V ? <V t={t} /> : <Poles t={t} cfg={cfg} />}</div>
       <div className="flex flex-wrap items-center gap-2">
-        {prob.inputs.filter((k) => !sensors.includes(k) && typeof prob.tags[k] === "boolean").map((k) => <Btn key={k} k={k} nc={prob.tags[k] === true} tog={cfg.toggles?.includes(k)} t={t} setT={setT} />)}
-        {prob.inputs.filter((k) => typeof prob.tags[k] === "number").map((k) => <label key={k} className="flex items-center gap-2 text-xs">{k} <input type="range" min="0" max="100" value={t[k]} onChange={(e) => setT((p) => ({ ...p, [k]: Number(e.target.value) }))} /> {Math.round(t[k])}</label>)}
-        {prob.inputs.filter((k) => typeof prob.tags[k] === "string").map((k) => <button key={k} className="btn2" onClick={() => setT((p) => ({ ...p, [k]: p[k] === "AUTO" ? "MANUAL" : "AUTO" }))}>{k}: {t[k]}</button>)}
+        {prob.inputs.filter((k) => !sensors.includes(k)).map((k) => <Btn key={k} k={k} nc={prob.tags[k] === true} tog={cfg.toggles?.includes(k)} t={t} setT={setT} />)}
         {(cfg.actions || []).map(([l, v]) => <button key={l} className="btn2" onClick={() => setT((p) => ({ ...p, ...v }))}>{l}</button>)}
       </div>
       <div className="flex flex-wrap gap-2 font-mono text-xs">{sensors.map((k) => <Pill key={k} k={k} on={t[k]} />)}{prob.outputs.map((k) => <Pill key={k} k={k} on={t[k]} />)}</div>

@@ -11,7 +11,7 @@ export default async function RootLayout({ children }) {
     <html lang="en">
       <body className="min-h-screen bg-slate-950 text-slate-100">
         <nav className="sticky top-0 z-50 border-b border-slate-800 bg-slate-900/90 backdrop-blur">
-          <div className="mx-auto flex max-w-[1800px] flex-wrap items-center justify-between gap-2 p-3">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 p-3">
             <div className="flex items-center gap-5">
               <Link href="/" className="text-lg font-bold text-cyan-400">PLC·HMI Sim</Link>
               <Link href="/problems" className="text-sm text-slate-300 hover:text-cyan-400">Problems</Link>
@@ -24,7 +24,7 @@ export default async function RootLayout({ children }) {
             </div>
           </div>
         </nav>
-        <main className="mx-auto w-full max-w-[1800px] p-3 sm:p-4">{children}</main>
+        <main className="mx-auto max-w-7xl p-4">{children}</main>
       </body>
     </html>
   );
