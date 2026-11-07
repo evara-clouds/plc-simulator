@@ -107,7 +107,7 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-[17rem_minmax(0,1fr)_15rem]">
+      <div className={`grid gap-3 ${tab === "ladder" ? "lg:grid-cols-[17rem_minmax(0,1fr)_15rem] xl:grid-cols-[20rem_minmax(0,1fr)_17rem]" : "lg:grid-cols-[17rem_minmax(0,1fr)] xl:grid-cols-[20rem_minmax(0,1fr)]"}`}>
         {/* LEFT: Description + Tags (Factory I/O style) */}
         <div className="space-y-3">
           <div className="rounded-lg border border-slate-800 bg-slate-900 p-3">
@@ -141,8 +141,8 @@ export default function Page() {
         </div>
 
         {/* CENTER: networks / scene */}
-        <div className="min-w-0 rounded-lg border border-slate-800 bg-slate-900 p-3">
-          <div className="mb-3 flex gap-1">
+        <div className="min-w-0 rounded-lg border border-slate-800 bg-slate-900 p-3 lg:min-h-[calc(100vh-11rem)]">
+          <div className="mb-3 flex flex-wrap gap-1">
             {[["ladder", "LAD – Ladder"], ["fbd", "FBD"], ["tags", "Tag table"], ["scene", "Scene (Factory I/O)"]].map(([k, l]) => (
               <button key={k} onClick={() => setTab(k)} className={`rounded px-3 py-1 text-xs font-semibold ${tab === k ? "bg-cyan-600" : "bg-slate-800 text-slate-300"}`}>{l}</button>))}
             <span className={`ml-auto text-xs font-mono ${run ? "text-emerald-400" : "text-amber-400"}`}>{run ? "● RUN" : "● STOP"}</span>
@@ -155,7 +155,7 @@ export default function Page() {
         </div>
 
         {/* RIGHT: Instructions task card */}
-        <div>{tab === "ladder" ? <Instructions armed={armed} setArmed={setArmed} onAdd={addBlock} /> : <p className="text-xs text-slate-500">Instructions are available on the LAD tab.</p>}</div>
+        {tab === "ladder" && <div><Instructions armed={armed} setArmed={setArmed} onAdd={addBlock} /></div>}
       </div>
     </div>
   );
