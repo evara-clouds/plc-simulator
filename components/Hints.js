@@ -29,7 +29,7 @@ export default function HintPanel({ problemId, tick }) {
         ? <button className="btn2 w-full" onClick={ask}>Show {LABEL[s.hints].toLowerCase()}</button>
         : <p className="text-slate-500">🔒 {LABEL[s.hints]} unlocks after {s.need} failed checks ({s.attempts}/{s.need}).</p>)}
       {err && <p className="text-red-400">{err}</p>}
-      {s.solved && next && <a href={`/?problem=${next.id}`} className="btn block text-center">Next: {next.title} →</a>}
+      {s.solved && next && <a href={`/lab?problem=${next.id}`} className="btn block text-center">Next: {next.title} →</a>}
     </div>
   );
 }

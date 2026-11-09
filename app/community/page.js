@@ -55,11 +55,11 @@ export default async function Community({ searchParams }) {
                     <div className="font-bold text-slate-200">{p.title}</div>
                     {p.solved && <span className="shrink-0 rounded bg-emerald-900 px-1.5 py-0.5 text-[10px] text-emerald-300">✓ ALL TESTS PASSED</span>}
                   </div>
-                  {pr ? <div className="text-xs"><span className={COL[pr.level]}>{pr.level}</span> · <Link href={`/?problem=${pr.id}`} className="text-cyan-400">{pr.title}</Link></div>
+                  {pr ? <div className="text-xs"><span className={COL[pr.level]}>{pr.level}</span> · <Link href={`/lab?problem=${pr.id}`} className="text-cyan-400">{pr.title}</Link></div>
                     : <div className="text-xs text-slate-500">Free build</div>}
                   <div className="text-xs text-slate-400">by {p.user.name} · {p.updatedAt.toLocaleDateString()}</div>
                   <div className="flex items-center gap-2">
-                    <Link href={`/?project=${p.id}`} className="btn flex-1 text-center">Open</Link>
+                    <Link href={`/lab?project=${p.id}`} className="btn flex-1 text-center">Open</Link>
                     {u ? <form action={toggleLike}><input type="hidden" name="id" value={p.id} /><button className="btn2">{liked.has(p.id) ? "♥" : "♡"} {p._count.likes}</button></form>
                       : <span className="text-xs text-slate-400">♡ {p._count.likes}</span>}
                   </div>

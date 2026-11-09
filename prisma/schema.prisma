@@ -18,6 +18,9 @@ model User {
   likes    Like[]
   progress Progress[]
   reviews  Review[]
+  classes     Class[]
+  enrollments Enrollment[]
+  examRuns    ExamRun[]
 }
 model Project {
   id         String   @id @default(cuid())
@@ -87,4 +90,39 @@ model Review {
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([updatedAt])
+}
+
+model Class {
+  id          String       @id @default(cuid())
+  name        String
+  code        String       @unique
+  createdAt   DateTime     @default(now())
+  ownerId     String
+  owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  enrollments Enrollment[]
+  @@index([ownerId])
+}
+model Enrollment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  userId    String
+  classId   String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  @@unique([userId, classId])
+  @@index([classId])
+}
+model ExamRun {
+  id         String    @id @default(cuid())
+  examId     String
+  passed     String    @default("[]")
+  tries      String    @default("{}")
+  code       String?   @unique
+  showName   Boolean   @default(false)
+  finishedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([userId, examId])
 }

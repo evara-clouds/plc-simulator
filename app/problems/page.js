@@ -33,7 +33,7 @@ export default async function Problems({ searchParams }) {
       <div className={`text-xs ${COL[p.level]}`}>{p.level}{P[p.id] && !done(p.id) && P[p.id].attempts > 0 ? <span className="text-slate-500"> · {P[p.id].attempts} failed check{P[p.id].attempts > 1 ? "s" : ""}</span> : null}</div>
       <p className="text-sm text-slate-400">{p.text}</p>
       <div className="flex items-center gap-3">
-        <Link href={`/?problem=${p.id}`} className="btn inline-block">{done(p.id) ? "Review" : "Solve"}</Link>
+        <Link href={`/lab?problem=${p.id}`} className="btn inline-block">{done(p.id) ? "Review" : "Solve"}</Link>
         {counts[p.id] > 0 && <Link href={`/community?problem=${p.id}`} className="text-xs text-cyan-400">{counts[p.id]} verified solution{counts[p.id] > 1 ? "s" : ""} →</Link>}
       </div>
     </div>

@@ -21,7 +21,7 @@ export default async function Projects() {
               <div className="font-bold">{p.title} {p.isPublic && <span className="ml-1 rounded bg-cyan-900 px-1.5 text-[10px] text-cyan-300">PUBLIC</span>}</div>
               <div className="text-xs text-slate-400">Updated {p.updatedAt.toLocaleString()}</div>
               <div className="flex flex-wrap gap-2">
-                <Link href={`/?project=${p.id}`} className="btn">Open</Link>
+                <Link href={`/lab?project=${p.id}`} className="btn">Open</Link>
                 <form action={setPublic}><input type="hidden" name="id" value={p.id} /><button className="btn2">{p.isPublic ? "Unpublish" : "Share to community"}</button></form>
                 <form action={deleteProject}><input type="hidden" name="id" value={p.id} /><button className="btn2 text-red-400">Delete</button></form>
               </div>
@@ -37,7 +37,7 @@ export default async function Projects() {
             <div key={p.id} className="space-y-2 rounded-xl border border-slate-800 bg-slate-900 p-4">
               <div className="font-bold">{p.title}</div>
               <div className="text-xs text-slate-400">by {p.user.name}</div>
-              <Link href={`/?project=${p.id}`} className="btn inline-block">Open (saves as your copy)</Link>
+              <Link href={`/lab?project=${p.id}`} className="btn inline-block">Open (saves as your copy)</Link>
             </div>
           ))}
         </div>

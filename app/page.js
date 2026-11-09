@@ -1,175 +1,27 @@
-"use client";
-import { useState, useEffect, useRef } from "react";
-import { saveProject, getProject, checkSolution } from "@/app/actions";
-import HintPanel from "@/components/Hints";
-import { BASE, ADDR, GROUPS, PRESETS, scan, runTests, norm, deriveTags, mkBlock } from "@/lib/sim";
-import TagTable from "@/components/TagTable";
-import { PROBLEMS } from "@/lib/problems";
-import Ladder, { Instructions } from "@/components/TiaLadder";
-import SceneView from "@/components/SceneView";
-import { SCENE_OF, stepScene, initTags } from "@/lib/scenes";
-import { FbdEditor } from "@/components/Editors";
-
-function Scene({ t, preset, set }) {
-  const hold = (k) => ({
-    onPointerDown: () => set((p) => ({ ...p, [k]: k !== "STOP" })),
-    onPointerUp: () => setTimeout(() => set((p) => ({ ...p, [k]: k === "STOP" })), 250),
-  });
-  const Row = ({ l, v, a, b }) => (
-    <div className="flex items-center justify-between gap-3 text-sm"><span>{l}</span>
-      <span className={`rounded px-2 py-0.5 text-xs font-bold ${v ? "bg-emerald-500/20 text-emerald-400" : "bg-slate-800 text-slate-500"}`}>{v ? a : b}</span></div>);
+import Link from "next/link";
+import { SITE, pilotHref } from "@/lib/site";
+export const metadata = { title: `${SITE.name}: practise PLC programming in your browser`, description: "Build ladder logic, watch live machines respond, get instant feedback and earn a verifiable badge. Nothing to install.",
+  openGraph: { title: `${SITE.name}: practise PLC programming in your browser`, description: "Build ladder logic, watch live machines respond and prove your skills.", type: "website" } };
+const WHO = [["Learners", "Practise at your own pace with live scenes, hints and progress tracking, on any device with a browser."], ["Trainers & schools", "Create a class, share a code, and see who is stuck. Trainees practise before and after lab sessions."], ["Employers", "Give technicians practice without tying up equipment, then see what each person has proved."]];
+const STEPS = [["1  Learn", "Short problems that build one idea at a time: contacts, seal-in circuits, interlocks, timers and counters."], ["2  Practice", "Build the ladder logic and watch a live garage door, tank or traffic light react. Instant checking, with hints that unlock as you try."], ["3  Prove", "A checkpoint with hidden tests and no hints. Pass it and earn a badge anyone can verify with a code."]];
+const FAQ = [["Do I need a PLC or any software?", "No. It runs in your browser, with a built-in ladder editor and simulated machines."], ["Which PLC brand does it teach?", "The ladder-logic ideas are the same across IEC 61131-3 PLCs, so the skills carry over. It is not tied to one brand."], ["What device do I need?", "A recent laptop, tablet or phone with a browser. The scenes are lightweight 2D, so older machines and slow connections work."], ["What data do you store?", "Your name, email, a hashed password, your saved work and your progress. Read the Data and security page for details."], ["How does a trainer use it?", "A trainer creates a class, shares the code, and sees each trainee's progress and exam results."], ["What does a pilot look like?", "Typically a few weeks with one cohort and one trainer. Request a pilot and we will agree the details."]];
+export default function Home() {
   return (
-    <div className="space-y-5">
-      {preset === "tank" ? (
-        <div className="flex items-center gap-6">
-          <div className="relative h-56 w-32 overflow-hidden rounded-b-2xl border-4 border-slate-600 bg-slate-950">
-            <div className="absolute bottom-0 w-full bg-cyan-500/80 transition-all" style={{ height: `${t.TANK_LEVEL}%` }} />
-            <div className="absolute inset-0 flex items-center justify-center text-xl font-black">{t.TANK_LEVEL}%</div>
-          </div>
-          <div className="flex-1 space-y-2"><Row l="Inlet valve" v={t.VALVE} a="OPEN" b="CLOSED" /><Row l="Agitator" v={t.MOTOR} a="RUNNING" b="STOPPED" /></div>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          <div className="relative h-20 overflow-hidden rounded-xl border border-slate-800 bg-slate-950">
-            <div className="absolute bottom-2 h-12 w-12 rounded bg-cyan-600 text-center text-xs font-bold leading-[3rem]" style={{ left: `${t.BOX_POS * 0.9}%` }}>BOX</div>
-            <div className="absolute top-0 h-full w-2 bg-amber-500" style={{ left: "50%" }} />
-          </div>
-          <Row l="Conveyor" v={t.CONVEYOR_RUN} a="MOVING" b="HALTED" />
-          <div className="text-sm">Boxes counted: <b className="text-emerald-400">{t.COUNTER_VAL}</b></div>
-        </div>
-      )}
-      <div className="grid grid-cols-3 gap-2">
-        <button {...hold("START")} className="rounded-lg bg-emerald-600 py-3 text-sm font-bold">START</button>
-        <button {...hold("STOP")} className="rounded-lg bg-slate-700 py-3 text-sm font-bold">STOP</button>
-        <button onClick={() => set((p) => ({ ...p, ESTOP: !p.ESTOP }))} className={`rounded-lg py-3 text-sm font-bold ${!t.ESTOP ? "animate-pulse bg-red-600" : "border border-red-900 bg-slate-800 text-red-400"}`}>E-STOP</button>
-      </div>
-    </div>
-  );
-}
-
-export default function Page() {
-  const [preset, setPreset] = useState("tank");
-  const [rungs, setRungs] = useState(PRESETS.tank.rungs);
-  const [tags, setTags] = useState(BASE);
-  const [run, setRun] = useState(false);
-  const [tab, setTab] = useState("ladder");
-  const [armed, setArmed] = useState(null);
-  const [title, setTitle] = useState("My PLC project");
-  const [pid, setPid] = useState(null);
-  const [msg, setMsg] = useState("");
-  const [prob, setProb] = useState(null);
-  const [res, setRes] = useState(null);
-  const [meta, setMeta] = useState({ userTags: [], comments: {} });
-  const rr = useRef(rungs); rr.current = rungs;
-  const cfgRef = useRef(null);
-  cfgRef.current = prob ? SCENE_OF[prob.id] : null;
-
-  useEffect(() => {
-    if (!run) return;
-    const i = setInterval(() => setTags((p) => (document.hidden ? p : stepScene(scan(p, rr.current, preset), cfgRef.current))), 100);
-    return () => clearInterval(i);
-  }, [run, preset]);
-
-  useEffect(() => {
-    const q = new URLSearchParams(window.location.search);
-    const pr = PROBLEMS.find((x) => x.id === q.get("problem"));
-    if (pr) { setProb(pr); setPreset(pr.preset); setRungs([{ out: pr.out || pr.outputs[0], c: "", series: [] }]); setTags(initTags(pr)); setRun(true); return; }
-    if (q.get("project")) getProject(q.get("project")).then((p) => {
-      if (!p) return setMsg("Project not found (log in?)");
-      setPid(p.id); setTitle(p.title); setPreset(p.data.preset); setRungs(norm(p.data.rungs)); setMeta(p.data.meta || { userTags: [], comments: {} }); { const q2 = PROBLEMS.find((x) => x.id === p.data.problem) || null; setProb(q2); setTags(initTags(q2)); }
-    });
-  }, []);
-
-  const choose = (k) => { setPreset(k); setRungs(PRESETS[k].rungs); setTags(BASE); setRun(false); setPid(null); setProb(null); };
-  const save = async (share) => {
-    const r = await saveProject({ id: pid, title, data: { preset, rungs, problem: prob?.id, meta }, isPublic: share });
-    if (r?.error) setMsg(r.error);
-    else { setPid(r.id); setMsg(share ? (r.solved ? "Shared ✓ all tests passed!" : "Shared ✓") : "Saved ✓"); }
-  };
-  const setT = (k, v) => setTags((p) => ({ ...p, [k]: v }));
-  const allNames = [...new Set([...(prob?.tags ? Object.keys(tags).filter((k) => k[0] !== "_") : Object.keys(BASE)), ...meta.userTags.map((u) => u.name), ...deriveTags(rungs)])];
-  const allCoils = [...(prob?.tags ? prob.outputs : ["MOTOR", "VALVE", "CONVEYOR_RUN"]), ...meta.userTags.filter((u) => u.type === "Bool").map((u) => u.name)];
-  const addBlock = (id) => { setRungs((rs) => [...rs, mkBlock(id, rs, prob?.outputs?.[0] || "MOTOR")]); setTab("ladder"); };
-
-  return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-800 bg-slate-900 p-2">
-        <div className="flex items-center gap-2">
-          <button onClick={() => setRun(!run)} className={`rounded px-4 py-1.5 text-sm font-bold ${run ? "bg-amber-600" : "bg-emerald-600"}`}>{run ? "⏸ Stop PLC" : "▶ Run PLC"}</button>
-          <button className="btn2" onClick={() => { setTags(initTags(prob)); setRun(false); }}>↺ Reset</button>
-          <select value={preset} onChange={(e) => choose(e.target.value)} className="inp w-44 py-1">
-            {Object.entries(PRESETS).map(([k, v]) => <option key={k} value={k}>{v.name}</option>)}
-          </select>
-        </div>
-        <div className="flex items-center gap-2">
-          <input value={title} onChange={(e) => setTitle(e.target.value)} className="inp w-44 py-1" />
-          <button className="btn" onClick={() => save()}>Save</button><button className="btn2 text-cyan-400" onClick={() => save(true)}>Share</button><span className="text-xs text-slate-400">{msg}</span>
-        </div>
-      </div>
-
-      <div className={`grid gap-3 ${tab === "ladder" ? "lg:grid-cols-[17rem_minmax(0,1fr)_15rem] xl:grid-cols-[20rem_minmax(0,1fr)_17rem]" : "lg:grid-cols-[17rem_minmax(0,1fr)] xl:grid-cols-[20rem_minmax(0,1fr)]"}`}>
-        {/* LEFT: Description + Tags (Factory I/O style) */}
-        <div className="space-y-3">
-          <div className="rounded-lg border border-slate-800 bg-slate-900 p-3">
-            <div className="mb-1 text-sm font-bold text-cyan-400">Description</div>
-            {prob ? (<>
-              <div className="text-sm font-semibold"><span className="mr-2 rounded bg-slate-800 px-1.5 text-xs">{prob.level}</span>{prob.title}</div>
-              <p className="mt-1 text-xs text-slate-300">{prob.text}</p>
-              <button className="btn mt-2 w-full" onClick={async () => { const r = await checkSolution({ problemId: prob.id, rungs }); if (r.error) setMsg(r.error); else { setRes(r.results); setMsg(r.signedIn ? "" : "Log in to save your progress"); } }}>Validate solution</button>
-              {res && <div className="mt-2 space-y-1 text-xs">
-                {res.map((r, i) => <div key={i} className={r.ok ? "text-emerald-400" : "text-red-400"}>{r.ok ? "✓" : "✗"} {r.label}{r.ok ? "" : ` — ${r.got}`}</div>)}
-                {res.every((r) => r.ok) && <div className="font-bold text-emerald-300">🎉 All tests passed!</div>}
-              </div>}
-            <HintPanel problemId={prob.id} tick={res} />
-            </>) : <p className="text-xs text-slate-300">{PRESETS[preset].info}</p>}
-          </div>
-          <div className="rounded-lg border border-slate-800 bg-slate-900 p-3">
-            <div className="mb-1 text-sm font-bold text-cyan-400">Tags</div>
-            {(prob?.tags ? [["Inputs", prob.inputs], ["Outputs", prob.outputs], ["Memory", Object.keys(tags).filter((k) => !prob.inputs.includes(k) && !prob.outputs.includes(k) && !k.startsWith("_"))]] : GROUPS).map(([g, names]) => (
-              <div key={g}>
-                <div className="mt-2 text-[10px] uppercase tracking-wide text-slate-500">{g}</div>
-                {names.map((k) => { const v = tags[k]; return (
-                  <div key={k} className="flex items-center justify-between border-b border-slate-800 py-1 font-mono text-xs">
-                    <span>{k} <span className="text-cyan-600">{ADDR[k] || (prob?.tags ? (prob.inputs.includes(k) ? "%I0." + prob.inputs.indexOf(k) : prob.outputs.includes(k) ? "%Q0." + prob.outputs.indexOf(k) : "") : "")}</span></span>
-                    {typeof v === "number" ? <input type="number" value={v} onChange={(e) => setT(k, Number(e.target.value))} className="w-16 rounded border border-slate-700 bg-slate-950 px-1" />
-                      : k === "MODE" ? <button className="btn2 !py-0 text-xs" onClick={() => setT(k, v === "AUTO" ? "MANUAL" : "AUTO")}>{v}</button>
-                      : g === "Inputs" ? <button onClick={() => setT(k, !v)} className={`w-8 rounded ${v ? "bg-emerald-600" : "bg-slate-700"}`}>{v ? 1 : 0}</button>
-                      : <span className={v ? "text-emerald-400" : "text-slate-500"}>{v ? 1 : 0}</span>}
-                  </div>); })}
-              </div>))}
-          </div>
-        </div>
-
-        {/* CENTER: networks / scene */}
-        <div className="min-w-0 rounded-lg border border-slate-800 bg-slate-900 p-3 lg:min-h-[calc(100vh-11rem)]">
-          <div className="mb-3 flex flex-wrap gap-1">
-            {[["ladder", "LAD – Ladder"], ["fbd", "FBD"], ["tags", "Tag table"], ["scene", "Scene (Factory I/O)"]].map(([k, l]) => (
-              <button key={k} onClick={() => setTab(k)} className={`rounded px-3 py-1 text-xs font-semibold ${tab === k ? "bg-cyan-600" : "bg-slate-800 text-slate-300"}`}>{l}</button>))}
-            <span className={`ml-auto text-xs font-mono ${run ? "text-emerald-400" : "text-amber-400"}`}>{run ? "● RUN" : "● STOP"}</span>
-          </div>
-          {tab === "ladder" && <Ladder rungs={rungs} setRungs={setRungs} state={tags} armed={armed} setArmed={setArmed} coil={prob?.out || prob?.outputs?.[0]} names={allNames} coils={allCoils} />}
-          {tab === "ladder" && prob?.tags && <div className="mt-4"><SceneView prob={prob} t={tags} setT={setTags} /></div>}
-          {tab === "fbd" && <FbdEditor rungs={rungs} setRungs={setRungs} state={tags} coil={prob?.out || prob?.outputs?.[0]} names={prob?.tags ? Object.keys(tags).filter((k) => !k.startsWith("_")) : undefined} coils={prob?.tags ? prob.outputs : undefined} />}
-          {tab === "tags" && <TagTable tags={tags} setTags={setTags} prob={prob} rungs={rungs} meta={meta} setMeta={setMeta} />}
-          {tab === "scene" && (prob?.tags ? <SceneView prob={prob} t={tags} setT={setTags} /> : <Scene t={tags} preset={preset} set={setTags} />)}
-        </div>
-
-        {/* RIGHT: Instructions task card */}
-        {tab === "ladder" && <div><Instructions armed={armed} setArmed={setArmed} onAdd={addBlock} /></div>}
-      </div>
-    </div>
-  );
-}
-
-function Lamps({ t, outs }) {
-  return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      {outs.map((o) => (
-        <div key={o} className="flex flex-col items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 p-3">
-          <div className={`h-8 w-8 rounded-full ${t[o] ? "bg-emerald-400 shadow-[0_0_14px_#34d399]" : "bg-slate-700"}`} />
-          <span className="font-mono text-xs">{o}</span>
-        </div>
-      ))}
+    <div className="mx-auto max-w-5xl space-y-16 py-8">
+      <section className="space-y-5 text-center">
+        <h1 className="text-4xl font-bold leading-tight text-white sm:text-5xl">Practise PLC programming <span className="text-cyan-400">before the lab.</span></h1>
+        <p className="mx-auto max-w-2xl text-lg text-slate-300">Build ladder logic in your browser, watch live machines respond, and prove your skills with a verifiable badge.</p>
+        <div className="flex flex-wrap justify-center gap-3"><Link href="/lab" className="btn">Try the lab</Link><a href={pilotHref()} className="btn2 !px-4 !py-2">Request a pilot</a></div>
+        <p className="text-xs text-slate-500">Runs in your browser. Nothing to install.</p>
+      </section>
+      <section className="space-y-4"><h2 className="text-center text-2xl font-bold">Who it is for</h2>
+        <div className="grid gap-4 sm:grid-cols-3">{WHO.map(([t, d]) => <div key={t} className="rounded-xl border border-slate-800 bg-slate-900 p-5"><h3 className="mb-2 font-bold text-cyan-400">{t}</h3><p className="text-sm text-slate-300">{d}</p></div>)}</div></section>
+      <section className="space-y-4"><h2 className="text-center text-2xl font-bold">Learn it, practise it, prove it</h2>
+        <div className="grid gap-4 sm:grid-cols-3">{STEPS.map(([t, d]) => <div key={t} className="rounded-xl border border-slate-800 bg-slate-900 p-5"><h3 className="mb-2 text-lg font-bold text-amber-400">{t}</h3><p className="text-sm text-slate-300">{d}</p></div>)}</div></section>
+      {SITE.demo && <section className="space-y-3"><h2 className="text-center text-2xl font-bold">See it in action</h2><video src={SITE.demo} controls preload="metadata" className="mx-auto w-full max-w-3xl rounded-xl border border-slate-800" /></section>}
+      <section className="mx-auto max-w-3xl space-y-2"><h2 className="text-center text-2xl font-bold">Questions</h2>
+        {FAQ.map(([q, a]) => <details key={q} className="rounded-xl border border-slate-800 bg-slate-900 p-4"><summary className="cursor-pointer font-semibold">{q}</summary><p className="mt-2 text-sm text-slate-300">{a}</p></details>)}</section>
+      <section className="space-y-3 rounded-2xl border border-cyan-800 bg-slate-900 p-8 text-center"><h2 className="text-2xl font-bold">Run a pilot with your team or class</h2><p className="text-slate-300">One cohort, one trainer, a few weeks. We measure practice time, completion and feedback.</p><a href={pilotHref()} className="btn inline-block">Request a pilot</a></section>
     </div>
   );
 }

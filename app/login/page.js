@@ -8,7 +8,7 @@ export default function Login() {
     e.preventDefault();
     const f = new FormData(e.target);
     const r = await signIn("credentials", { email: f.get("email"), password: f.get("password"), redirect: false });
-    if (r?.error) setErr("Invalid email or password"); else window.location.href = "/";
+    if (r?.error) setErr("Invalid email or password"); else window.location.href = "/problems";
   }
   return (
     <form onSubmit={submit} className="mx-auto mt-10 max-w-sm space-y-3 rounded-xl border border-slate-800 bg-slate-900 p-6">

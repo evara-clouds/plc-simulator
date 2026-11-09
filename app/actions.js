@@ -7,6 +7,10 @@ import { prisma } from "@/lib/prisma";
 import { getUser } from "@/lib/auth";
 import { PROBLEMS } from "@/lib/problems";
 import { runTests } from "@/lib/sim";
+import { randomBytes } from "crypto";
+import { EXAMS } from "@/lib/exams";
+import { EXAM_TESTS } from "@/lib/exam_tests";
+import { isTrainer } from "@/lib/trainer";
 import { HINTS } from "@/lib/hints";
 
 export async function register(fd) {
@@ -141,4 +145,56 @@ export async function deleteReview() {
   if (!u) redirect("/login");
   await prisma.review.deleteMany({ where: { userId: u.id } });
   revalidatePath("/community");
+}
+
+export async function createClass(fd) {
+  const u = await getUser();
+  if (!u || !isTrainer(u)) redirect("/");
+  const name = String(fd.get("name") || "").trim().slice(0, 60);
+  if (name.length < 2) return;
+  await prisma.class.create({ data: { name, code: randomBytes(3).toString("hex").toUpperCase(), ownerId: u.id } });
+  revalidatePath("/trainer");
+}
+
+export async function joinClass(fd) {
+  const u = await getUser();
+  if (!u) redirect("/login");
+  const code = String(fd.get("code") || "").trim().toUpperCase();
+  const c = await prisma.class.findUnique({ where: { code } });
+  if (!c) redirect("/join?error=" + encodeURIComponent("Class code not found"));
+  await prisma.enrollment.upsert({ where: { userId_classId: { userId: u.id, classId: c.id } }, create: { userId: u.id, classId: c.id }, update: {} });
+  redirect("/join?joined=" + encodeURIComponent(c.name));
+}
+
+// Prove mode: graded against hidden tests that never leave the server. Only pass / fail is returned.
+export async function submitExamTask({ examId, problemId, rungs }) {
+  const u = await getUser();
+  if (!u) return { error: "Log in first" };
+  const exam = EXAMS[examId], problem = PROBLEMS.find((x) => x.id === problemId);
+  if (!exam || !problem || !exam.tasks.includes(problemId) || !Array.isArray(rungs) || rungs.length > 60 || JSON.stringify(rungs).length > 20000) return { error: "Invalid submission" };
+  const k = { userId_examId: { userId: u.id, examId } };
+  const run = (await prisma.examRun.findUnique({ where: k })) || { passed: "[]", tries: "{}" };
+  const passed = JSON.parse(run.passed), tries = JSON.parse(run.tries);
+  if (passed.includes(problemId)) return { passed: true, done: passed.length, triesLeft: 0 };
+  if ((tries[problemId] || 0) >= exam.maxTries) return { error: "No tries left for this task" };
+  let ok = false;
+  try { ok = runTests(rungs, "none", EXAM_TESTS[problemId], problem.tags).every((r) => r.ok); } catch {}
+  tries[problemId] = (tries[problemId] || 0) + 1;
+  if (ok) passed.push(problemId);
+  const data = { passed: JSON.stringify(passed), tries: JSON.stringify(tries) };
+  await prisma.examRun.upsert({ where: k, create: { userId: u.id, examId, ...data }, update: data });
+  revalidatePath("/exam");
+  return { passed: ok, done: passed.length, triesLeft: exam.maxTries - tries[problemId] };
+}
+
+export async function claimBadge(fd) {
+  const u = await getUser();
+  if (!u) redirect("/login");
+  const examId = String(fd.get("examId")), exam = EXAMS[examId];
+  if (!exam) return;
+  const run = await prisma.examRun.findUnique({ where: { userId_examId: { userId: u.id, examId } } });
+  if (!run || run.code || JSON.parse(run.passed).length < exam.passMark) return;   // only after passing, and only once
+  const code = "PLC-" + randomBytes(2).toString("hex").toUpperCase() + "-" + randomBytes(2).toString("hex").toUpperCase();
+  await prisma.examRun.update({ where: { id: run.id }, data: { code, showName: fd.get("showName") === "on", finishedAt: new Date() } });
+  revalidatePath("/exam");
 }
