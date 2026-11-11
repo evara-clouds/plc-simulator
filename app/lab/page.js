@@ -97,6 +97,7 @@ export default function Page() {
         <div className="flex items-center gap-2">
           <button onClick={() => setRun(!run)} className={`rounded px-4 py-1.5 text-sm font-bold ${run ? "bg-amber-600" : "bg-emerald-600"}`}>{run ? "⏸ Stop PLC" : "▶ Run PLC"}</button>
           <button className="btn2" onClick={() => { setTags(initTags(prob)); setRun(false); }}>↺ Reset</button>
+          <a href="/lab/projects" className="btn2">Industrial projects</a>
           <select value={preset} onChange={(e) => choose(e.target.value)} className="inp w-44 py-1">
             {Object.entries(PRESETS).map(([k, v]) => <option key={k} value={k}>{v.name}</option>)}
           </select>
