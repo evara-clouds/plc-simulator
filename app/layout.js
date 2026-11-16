@@ -1,4 +1,5 @@
 import "./globals.css";
+import Footer from "@/components/Footer";
 import Link from "next/link";
 import { getUser } from "@/lib/auth";
 import SignOut from "@/components/SignOut";
@@ -25,6 +26,7 @@ export default async function RootLayout({ children }) {
           </div>
         </nav>
         <main className="mx-auto w-full max-w-[1800px] p-3 sm:p-4">{children}</main>
+              <Footer />
       </body>
     </html>
   );

@@ -14,9 +14,9 @@ export default function Home() {
         <div className="flex flex-wrap justify-center gap-3"><Link href="/lab" className="btn">Try the lab</Link><a href={pilotHref()} className="btn2 !px-4 !py-2">Request a pilot</a></div>
         <p className="text-xs text-slate-500">Runs in your browser. Nothing to install.</p>
       </section>
-      <section className="space-y-4"><h2 className="text-center text-2xl font-bold">Who it is for</h2>
+      <section id="who" className="scroll-mt-20 space-y-4"><h2 className="text-center text-2xl font-bold">Who it is for</h2>
         <div className="grid gap-4 sm:grid-cols-3">{WHO.map(([t, d]) => <div key={t} className="rounded-xl border border-slate-800 bg-slate-900 p-5"><h3 className="mb-2 font-bold text-cyan-400">{t}</h3><p className="text-sm text-slate-300">{d}</p></div>)}</div></section>
-      <section className="space-y-4"><h2 className="text-center text-2xl font-bold">Learn it, practise it, prove it</h2>
+      <section id="how" className="scroll-mt-20 space-y-4"><h2 className="text-center text-2xl font-bold">Learn it, practise it, prove it</h2>
         <div className="grid gap-4 sm:grid-cols-3">{STEPS.map(([t, d]) => <div key={t} className="rounded-xl border border-slate-800 bg-slate-900 p-5"><h3 className="mb-2 text-lg font-bold text-amber-400">{t}</h3><p className="text-sm text-slate-300">{d}</p></div>)}</div></section>
       {SITE.demo && <section className="space-y-3"><h2 className="text-center text-2xl font-bold">See it in action</h2><video src={SITE.demo} controls preload="metadata" className="mx-auto w-full max-w-3xl rounded-xl border border-slate-800" /></section>}
       <section className="mx-auto max-w-3xl space-y-2"><h2 className="text-center text-2xl font-bold">Questions</h2>

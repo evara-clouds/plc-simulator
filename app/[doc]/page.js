@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { SITE, pilotHref } from "@/lib/site";
 export const dynamicParams = false;
-export const generateStaticParams = () => ["privacy", "data-and-security", "terms", "contact"].map((doc) => ({ doc }));
+export const generateStaticParams = () => ["privacy", "data-and-security", "terms", "contact", "about"].map((doc) => ({ doc }));
 const UPDATED = "November 2026";
 const DOCS = {
   privacy: { title: "Privacy", body: [
@@ -25,6 +25,11 @@ const DOCS = {
     ["Learning tool only", "The scenes are simplified simulations for learning. Do not use the logic you practise here for real machinery without proper design, testing and safety review."],
     ["No guarantees", "The service is provided as it is, during a pilot, without any promise that it is always available or error-free."],
     ["Changes", "We may update these terms and the service. Continuing to use it means you accept the changes."],
+    ["Updated", UPDATED]] },
+  about: { title: "About", body: [
+    ["What this is", `${SITE.name} is a browser-based practice tool for PLC ladder logic. Trainees build programs, watch simulated machines respond, get instant feedback, and can sit a checkpoint to earn a badge anyone can verify.`],
+    ["Why it exists", "PLC skills come from practice, and lab time is limited. This tool gives trainees more practice before and after hands-on sessions, and gives trainers a clearer view of progress."],
+    ["Who runs it", `It is operated by ${SITE.operator} and is currently offered as a pilot.`],
     ["Updated", UPDATED]] },
   contact: { title: "Contact", body: [
     ["Get in touch", SITE.email ? `Email ${SITE.email} for questions, data requests, or to report a problem.` : "The contact email has not been published yet. Please ask the person who shared this site with you."],
