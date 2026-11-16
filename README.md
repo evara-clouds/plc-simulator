@@ -88,3 +88,10 @@ Run `npm test` before opening a pull request. Please report bugs and ideas as is
 ## Editing the course
 
 The course topics, starting price and "why choose us" points live in `lib/course.js`. Only the PLC topic is practised in this tool; the others are labelled as taught in class.
+
+## Student and company accounts
+
+Sign-up and log-in have a Student and a Company tab (`/register?type=company`). The account type and company name are stored on the user (`accountType`, `company`). Company accounts land on `/trainer`. They do **not** get trainer tools automatically: those still depend on `TRAINER_EMAILS`, so nobody can grant themselves trainer access.
+
+After pulling this change, update the database once: `npx prisma db push`. It adds two columns and existing users become students.
+

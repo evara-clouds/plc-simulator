@@ -10,7 +10,12 @@ export const metadata = { title: "Trainer · PLC Practice Companion" };
 export default async function Trainer() {
   const u = await getUser();
   if (!u) redirect("/login");
-  if (!isTrainer(u)) return <p className="mx-auto max-w-md py-8 text-slate-300">Trainer tools are only available to approved trainers. Ask the site owner to add your email to the trainer list.</p>;
+  if (!isTrainer(u)) return (
+    <div className="mx-auto max-w-md space-y-3 py-8 text-slate-300">
+      <p>{u.type === "company" ? "Your company account is registered. Team tools (classes and a progress view) are switched on once your pilot is agreed." : "Trainer tools are only available to approved trainers. Ask the site owner to add your email to the trainer list."}</p>
+      {u.type === "company" && <Link href="/contact?for=company#pilot" className="btn inline-block">Request a pilot</Link>}
+    </div>
+  );
   const classes = await prisma.class.findMany({ where: { ownerId: u.id }, orderBy: { createdAt: "desc" }, include: { _count: { select: { enrollments: true } } } });
   return (
     <div className="mx-auto max-w-3xl space-y-5">

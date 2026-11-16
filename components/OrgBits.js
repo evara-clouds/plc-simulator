@@ -51,14 +51,14 @@ export function Tracks({ items }) {
   );
 }
 
-export function Price({ name, who, price, points, featured }) {
+export function Price({ name, who, price, points, featured, href = "/contact#pilot", cta = "Request a pilot" }) {
   return (
     <div className={`rounded-xl border p-6 ${featured ? "border-cyan-800 bg-cyan-950/30" : "border-slate-800 bg-slate-900"}`}>
       <h3 className="text-xl font-bold text-white">{name}</h3>
       <p className="text-sm text-slate-400">{who}</p>
       <p className="mt-1 text-lg font-semibold text-cyan-300">{price}</p>
       <ul className="mt-4 space-y-2 text-sm text-slate-300">{points.map((p) => <li key={p} className="flex gap-2"><span className="text-cyan-400">✓</span><span>{p}</span></li>)}</ul>
-      <a href="#request" className={`${btn} mt-6 inline-block py-2.5`}>Contact us for a quote</a>
+      <a href={href} className={`${btn} mt-6 inline-block py-2.5`}>{cta}</a>
     </div>
   );
 }

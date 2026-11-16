@@ -1,14 +1,18 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { COURSE } from "@/lib/course";
 
 const SIZES = ["Under 5", "5 to 10", "11 to 25", "26 to 100", "Over 100"];
 const DEVICES = ["Every trainee has a laptop", "Trainees share laptops", "No laptops yet"];
 const NETWORK = ["Reliable internet in the room", "Slow or unreliable internet", "No internet in the room"];
+const PROGRAMMES = ["Full automation course", ...COURSE.topics.map((t) => t[0]).filter((t) => t !== "And many more"), "Not sure yet"];
 const input = "w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none";
 
 // One form for every "Request a pilot" button: a pilot is an in-person (physical) class.
 export default function QuoteForm({ kind = "pilot", email, venue }) {
   const [state, setState] = useState("idle");
+  const [audience, setAudience] = useState("");
+  useEffect(() => { const f = new URLSearchParams(window.location.search).get("for"); if (f === "student" || f === "company") setAudience(f); }, []);
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -29,10 +33,15 @@ export default function QuoteForm({ kind = "pilot", email, venue }) {
       <input name="name" required placeholder="Your name" className={input} />
       <input name="email" type="email" required placeholder="Email" className={input} />
       <input name="phone" placeholder="Phone or WhatsApp, e.g. +254 7XX XXX XXX (optional)" className={input} />
-      <input name="org" required placeholder="Organisation" className={input} />
-      <input name="course" required placeholder="Course or class (for example PLC basics)" className={input} />
+      <select name="audience" required value={audience} onChange={(e) => setAudience(e.target.value)} className={input}>
+        <option value="" disabled>I am booking as</option><option value="student">A student</option><option value="company">A company</option>
+      </select>
+      <input name="org" required placeholder={audience === "student" ? "School or employer (or none)" : "Company or organisation"} className={input} />
+      <select name="program" required defaultValue="" className={`${input} sm:col-span-2`}>
+        <option value="" disabled>Programme you want</option>{PROGRAMMES.map((p) => <option key={p}>{p}</option>)}
+      </select>
       <select name="size" required defaultValue="" className={input}>
-        <option value="" disabled>Number of trainees</option>{SIZES.map((p) => <option key={p}>{p}</option>)}
+        <option value="" disabled>{audience === "student" ? "Number of people attending" : "Number of trainees"}</option>{SIZES.map((p) => <option key={p}>{p}</option>)}
       </select>
       <input name="venue" defaultValue={venue || ""} placeholder="Where the class takes place" className={input} />
       <input name="start" placeholder="Preferred start date (optional)" className={input} />

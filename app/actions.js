@@ -14,16 +14,23 @@ import { isTrainer } from "@/lib/trainer";
 import { HINTS } from "@/lib/hints";
 
 export async function register(fd) {
+  const type = fd.get("type") === "company" ? "company" : "student";
+  const back = (m) => redirect(`/register?type=${type}&error=` + encodeURIComponent(m));
   const p = z.object({
     name: z.string().trim().min(2).max(60),
     email: z.string().trim().toLowerCase().email(),
     password: z.string().min(8).max(100),
+    company: z.string().trim().max(80).optional(),
   }).safeParse(Object.fromEntries(fd));
-  if (!p.success) redirect("/register?error=" + encodeURIComponent("Check details (password min 8 chars)"));
-  if (process.env.SIGNUP_CODE && fd.get("code") !== process.env.SIGNUP_CODE) redirect("/register?error=" + encodeURIComponent("Invalid invite code"));
-  if (await prisma.user.findUnique({ where: { email: p.data.email } })) redirect("/register?error=" + encodeURIComponent("Email already registered"));
-  await prisma.user.create({ data: { ...p.data, password: await bcrypt.hash(p.data.password, 10) } });
-  redirect("/login");
+  if (!p.success) back("Check details (password min 8 chars)");
+  if (type === "company" && (p.data.company || "").length < 2) back("Enter your company name");
+  if (process.env.SIGNUP_CODE && fd.get("code") !== process.env.SIGNUP_CODE) back("Invalid invite code");
+  if (await prisma.user.findUnique({ where: { email: p.data.email } })) back("Email already registered");
+  await prisma.user.create({ data: {
+    name: p.data.name, email: p.data.email, password: await bcrypt.hash(p.data.password, 10),
+    accountType: type, company: type === "company" ? p.data.company : null,
+  } });
+  redirect(`/login?type=${type}`);
 }
 
 export async function saveProject({ id, title, data, isPublic }) {

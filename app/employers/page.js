@@ -1,6 +1,6 @@
-import { SITE, pilotHref, pilotBlurb, pricingBlurb } from "@/lib/site";
+import { SITE, pilotHref, pilotBlurb } from "@/lib/site";
 import { Hero, Section, Cards, Faq } from "@/components/OrgBits";
-import CourseSection from "@/components/Course";
+import CourseSection, { PricingSection } from "@/components/Course";
 
 export const metadata = { title: `For employers | ${SITE.name}`, description: "Give technicians and electricians PLC ladder-logic practice without tying up equipment, and see what each person has proved." };
 
@@ -35,7 +35,7 @@ export default function Employers() {
       <Section id="pilot" title="Start with a pilot" intro={pilotBlurb()}>
         <a href={pilotHref()} className="inline-block rounded-lg bg-cyan-600 px-6 py-3 text-sm font-semibold text-white hover:bg-cyan-500">Request a pilot</a>
       </Section>
-      <Section title="Pricing and payment" intro={pricingBlurb()} />
+      <PricingSection />
       <Section title="Questions from managers"><Faq items={FAQ} /></Section>
     </main>
   );
