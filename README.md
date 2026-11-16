@@ -30,8 +30,11 @@ See `.env.example` for every setting. Required: `DATABASE_URL`, `DIRECT_URL`, `N
 | --- | --- |
 | `SIGNUP_CODE` | Require an invite code to register |
 | `TRAINER_EMAILS` | Comma-separated emails that can use `/trainer` |
-| `QUOTE_WEBHOOK_URL` | Where quote requests are sent. Without it they are only written to the server log |
+| `QUOTE_WEBHOOK_URL` | Where pilot requests are forwarded (Slack/Discord-style webhook). Without it they are only written to the server log, so set it |
 | `NEXT_PUBLIC_CONTACT_EMAIL`, `NEXT_PUBLIC_OPERATOR` | Shown on the About, Privacy and Contact pages |
+| `NEXT_PUBLIC_PILOT_VENUE` | Venue shown on pilot requests (default: Centurion Systems Limited) |
+| `NEXT_PUBLIC_PILOT_PRICE` | Optional pilot fee text shown on the site, for example `KES 15,000 per trainee` |
+| `NEXT_PUBLIC_PAY_METHODS` | Payment methods shown on the site (default: M-Pesa, bank transfer or against an invoice) |
 
 ## Tests
 
@@ -76,3 +79,8 @@ Set the same environment variables in your host (for example Vercel). `npm run b
 ## Contributing
 
 Run `npm test` before opening a pull request. Please report bugs and ideas as issues.
+
+## Not done yet
+
+- **CDACC unit mapping.** The site makes no claim about Kenyan curriculum alignment. Add it only after each problem has been mapped to a unit of competency.
+- **Online payments.** M-Pesa is mentioned as a way to pay; there is no payment integration in the app.

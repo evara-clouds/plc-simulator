@@ -1,69 +1,48 @@
-import { SITE } from "@/lib/site";
-import QuoteForm from "@/components/QuoteForm";
-import { Hero, Section, Cards, Tracks, Price, Faq } from "@/components/OrgBits";
+import { SITE, pilotHref, pilotBlurb, pricingBlurb } from "@/lib/site";
+import { Hero, Section, Cards, Tracks, Faq } from "@/components/OrgBits";
 
-export const metadata = { title: `For schools | ${SITE.name}`, description: "A browser-based controls lab for technical schools and colleges, with an instructor view of every student's progress." };
+export const metadata = { title: `For trainers and schools | ${SITE.name}`, description: "Browser-based PLC ladder-logic practice for in-person classes, with a trainer view of every trainee's progress." };
 
-// EDIT THESE to match what your product really offers.
 const FEATURES = [
-  ["Every student at a bench", "No waiting for a trainer. 4 trainer benches and 13 machines run in the browser, with a 2D view for slower computers."],
-  ["A curriculum from Ohm's law up", "111 interactive lessons on 14 tracks: electricity and safety, motor control, prints, PLC programming, drives, analog, networks and HMI."],
-  ["Mistakes that cost nothing", "Lockout, proving dead and fault-finding practiced until they're habits. Lessons follow NFPA 70E, and every lockout is followed by proving zero voltage."],
-  ["Scored checkpoints", "One per track, 14 in all: an unseen fault or task, no hints, and a pass mark. Students build a printable record of what they've passed."],
-  ["An instructor view", "Each student's lessons, practice and checkpoint results under your class, in one place, for you and the other instructors you add."],
-  ["Real PLC work", "Program every machine in the built-in IEC 61131-3 PLC, or connect your own PLC over Modbus TCP, and commission it against the spec."],
+  ["Practice beside the hardware", "Every trainee gets their own bench in the browser, so nobody waits for a trainer kit. Use it before, during and after hands-on sessions."],
+  ["36 practice problems", "From a single contact and coil up to five complete plants: bottling, paint mixing, pasteurising, pumping and a three-floor lift."],
+  ["Live machines", "Simple 2D scenes (garage door, tanks, conveyors, traffic lights) react to the trainee's ladder logic, with instant checking and hints that unlock as they try."],
+  ["A trainer view", "Create a class, share the code, and see each trainee's solved problems, recent activity and checkpoint results. Export the class as a CSV."],
+  ["A scored checkpoint", "Four tasks with hidden tests, no hints and three tries each. Passing 3 of 4 earns a badge that anyone can verify with a code."],
+  ["Nothing to install", "It runs in a current browser on a laptop or tablet. The scenes are lightweight, so older machines work."],
 ];
-const TRACKS = [
-  ["Electricity and the meter", "Bench check: three unknown parts, one bad"],
-  ["Safety for controls work", "Lock out and prove dead on an unseen machine"],
-  ["Inputs and outputs", "Wire-up check: a miswired sensor and a dead output"],
-  ["Control components", "Find the failed part among five"],
-  ["Motor control circuits", "An unseen fault in a reversing starter"],
-  ["Reading prints", "Trace three signals on an unseen print"],
-  ["Your first real panel", "A solo work order: an unseen fault, no hints"],
-  ["PLC programming 1", "A program to a spec: Conveyor 5 from a blank page"],
-  ["PLC programming 2", "Program and commission an unseen machine"],
-  ["Drives and motion", "An unseen drive fault on the VFD conveyor"],
-  ["Analog and process control", "Loop-check and fix a mis-scaled transmitter"],
-  ["Industrial networks", "A wrong address and a bad cable"],
-  ["HMI and SCADA", "A conveyor operator screen built to a spec"],
-  ["Machines and standards", "Capstone: commission a machine end to end from a spec"],
+const PATHS = [
+  ["Start here", "8 problems: contacts, coils and simple conditions"],
+  ["Latching and interlocks", "9 problems: seal-in circuits, STOP buttons, outputs that must never overlap"],
+  ["Traffic lights and crossings", "4 problems: remembered requests and safe switch-over"],
+  ["Process control", "6 problems: level control, modes and protection logic"],
+  ["Timers, counters and math", "4 problems: TON, TOF, CTU and ADD"],
+  ["Industrial projects", "5 complete plants that combine everything"],
 ];
 const FAQ = [
-  ["What computers do students need?", "A recent computer with a current browser (Chrome, Edge, Firefox or Safari). There is a 3D view and a 2D view for slower computers. Nothing is installed."],
-  ["How do students sign in?", "With their email address: they get a sign-in code by email, so there are no passwords to manage. We set up your class and seats, and the students you add join it when they sign in."],
-  ["Can high school students use it?", "Yes, students 13 and older, each with their own email address (a school-issued one is fine). It isn't for students under 13."],
-  ["Does it replace our physical trainers?", "No, and it isn't meant to. It gives every student bench time at once, lets them practice faults and lockout without risk, and gets them reading prints and taking readings before they reach your trainers, so trainer time goes further."],
-  ["Can students program PLCs in it?", "Yes. Every machine can be programmed in the built-in PLC (IEC 61131-3, in Structured Text or Ladder Diagram). If your program has PLCs or PLC software that can be a Modbus TCP client, students can connect them to the simulated machines."],
-  ["What standards does it follow?", "US practice: NFPA 70E and OSHA 1910.147 for electrical safety and lockout, NFPA 79 and UL 508A for machine wiring and panels, ISA-5.1 symbols on the process prints, and IEC 61131-3 for the PLC."],
-  ["How is it priced?", "By quote, for your classes and students. Tell us about your program with the form below and we'll reply by email within one business day. Pay by purchase order: we invoice, due in 30 days, by ACH or bank transfer, check or card, and your class opens when the PO arrives. A W-9 and vendor forms on request; send a tax exemption certificate with the order if you have one."],
+  ["Does it replace our hardware trainers?", "No. It gives every trainee practice time at once and lets them make mistakes at no cost, so hands-on time with the real equipment goes further."],
+  ["Which PLC does it teach?", "The ladder editor is styled after Siemens TIA Portal (it is not affiliated with Siemens). The ladder-logic ideas carry over to other IEC 61131-3 PLCs, but it does not replace the vendor's own software."],
+  ["How do trainees sign in?", "They register with their name, email and a password, then join your class with the code you share."],
+  ["What does the trainer see?", "For each trainee: problems solved, recent activity and checkpoint results, plus a CSV export of the class."],
+  ["What does it not do?", "It does not connect to physical PLCs, and the machines are simplified 2D simulations for learning. It teaches ladder logic and function block diagrams, not drives, networks or wiring."],
+  ["What equipment does the room need?", "A laptop or tablet with a current browser for each trainee, or one for each pair. A working internet connection is needed for sign-in and saving. Tell us about the room in the pilot request."],
 ];
 
 export default function Schools() {
   return (
     <main className="mx-auto max-w-5xl px-4 pb-12">
-      <Hero title="A controls lab every student can use."
-        lead="Students take readings, trace prints, find faults and program PLCs on simulated machines with full electrical prints, alongside your physical trainers. You see how each of them is doing."
-        links={[["See pricing", "#pricing"], ["See how it works", "#how"]]} />
-      <Section id="how" title="What your program gets">
+      <Hero title="PLC practice for every trainee in the class."
+        lead="Trainees build ladder logic and watch simulated machines respond, alongside your physical trainers. You see how each of them is doing."
+        links={[["Request a pilot", pilotHref()], ["See how it works", "#how"]]} />
+      <Section id="how" title="What your class gets">
         <Cards items={FEATURES} />
-        <p className="text-sm italic text-slate-500">Coming next, shaped by the schools using it: assigning tracks with due dates, and a placement check for before-and-after results.</p>
       </Section>
-      <Section title="The tracks" intro="Each track ends in a checkpoint. Use them in order as a full course, or pick the ones that fit yours."><Tracks items={TRACKS} /></Section>
-      <Section id="pricing" title="Pricing" intro="Priced for your program. Tell us about your classes and we'll send a quote by email.">
-        <Price featured name="Education" who="For colleges, CTE and training programs" price="Custom quoted for your classes" points={[
-          "111 interactive lessons on 14 tracks, from Ohm's law to networks and HMI",
-          "4 trainer benches and 13 machines, each with a full set of prints",
-          "Troubleshooting work orders, lockout and PLC programming on every machine",
-          "14 scored checkpoints and a printable record for each student",
-          "An instructor view of each student's progress and results"]} />
+      <Section title="The learning paths" intro="Use them in order as a short course, or pick the ones that fit yours."><Tracks items={PATHS} /></Section>
+      <Section id="pilot" title="Start with a pilot" intro={pilotBlurb()}>
+        <a href={pilotHref()} className="inline-block rounded-lg bg-cyan-600 px-6 py-3 text-sm font-semibold text-white hover:bg-cyan-500">Request a pilot</a>
       </Section>
-      <Section title="Questions from instructors"><Faq items={FAQ} /></Section>
-      <Section id="request" title="Request a quote" intro="Tell us about your class or program. We'll reply by email within one business day with a quote, and answer anything you ask.">
-        {SITE.email && <p className="text-sm text-slate-400">Questions first? Email <a className="text-cyan-400 hover:underline" href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>}
-        <QuoteForm kind="schools" email={SITE.email} />
-        <p className="text-xs text-slate-500">We use this only to reply to you.</p>
-      </Section>
+      <Section title="Pricing and payment" intro={pricingBlurb()} />
+      <Section title="Questions from trainers"><Faq items={FAQ} /></Section>
     </main>
   );
 }

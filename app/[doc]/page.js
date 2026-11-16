@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { SITE, pilotHref } from "@/lib/site";
+import { SITE, pilotBlurb, pricingBlurb } from "@/lib/site";
+import QuoteForm from "@/components/QuoteForm";
 export const dynamicParams = false;
 export const generateStaticParams = () => ["privacy", "data-and-security", "terms", "contact", "about"].map((doc) => ({ doc }));
 const UPDATED = "November 2026";
@@ -13,7 +14,7 @@ const DOCS = {
     ["Keeping data", "We keep your data until you ask us to delete it or the pilot you belong to ends."],
     ["Updated", UPDATED]] },
   "data-and-security": { title: "Data and security", body: [
-    ["What is stored", "Name, email, hashed password, saved projects, progress, posts, comments, reviews, class membership and exam results. We do not collect ID numbers, payment details or phone numbers."],
+    ["What is stored", "Name, email, hashed password, saved projects, progress, posts, comments, reviews, class membership and exam results. We do not collect ID numbers or payment details. A pilot request form can include a phone number if you choose to give one; it is used only to reply to you."],
     ["Where it lives", "Data is stored in a PostgreSQL database hosted in Frankfurt, Germany, and the application runs on Vercel. If an organisation needs its data kept in Kenya, we can deploy a Kenya-hosted copy for that organisation on request."],
     ["How it is protected", "Passwords are stored only as bcrypt hashes. All traffic uses HTTPS. Sessions use signed cookies. Answers are checked on the server, and the hidden exam tests are never sent to your browser. Trainer tools are limited to approved trainers and to the classes they own."],
     ["Your control", "You can delete your own review and projects, and ask us to delete your account and data via the Contact page."],
@@ -33,7 +34,8 @@ const DOCS = {
     ["Updated", UPDATED]] },
   contact: { title: "Contact", body: [
     ["Get in touch", SITE.email ? `Email ${SITE.email} for questions, data requests, or to report a problem.` : "The contact email has not been published yet. Please ask the person who shared this site with you."],
-    ["Request a pilot", "Tell us your organisation, the number of trainees and the course you teach, and we will agree a short pilot."]] },
+    ["Request a pilot", `${pilotBlurb()} Fill in the form below and we will agree dates with you.`],
+    ["Pricing and payment", pricingBlurb()]] },
 };
 export function generateMetadata({ params }) { return { title: `${DOCS[params.doc]?.title || "Page"} · ${SITE.name}` }; }
 export default function Doc({ params }) {
@@ -42,7 +44,7 @@ export default function Doc({ params }) {
     <article className="mx-auto max-w-2xl space-y-5 py-6">
       <h1 className="text-3xl font-bold text-cyan-400">{d.title}</h1>
       {d.body.map(([h, p]) => <section key={h}><h2 className="mb-1 text-lg font-semibold">{h}</h2><p className="text-slate-300">{p}</p></section>)}
-      {params.doc === "contact" && <a href={pilotHref()} className="btn inline-block">Request a pilot</a>}
+      {params.doc === "contact" && <section id="pilot" className="scroll-mt-20 space-y-3 pt-2"><h2 className="text-lg font-semibold">Pilot request form</h2><QuoteForm kind="pilot" email={SITE.email} venue={SITE.venue} /></section>}
     </article>
   );
 }
