@@ -1,5 +1,6 @@
 import { SITE, pilotHref, pilotBlurb, pricingBlurb } from "@/lib/site";
 import { Hero, Section, Cards, Faq } from "@/components/OrgBits";
+import CourseSection from "@/components/Course";
 
 export const metadata = { title: `For employers | ${SITE.name}`, description: "Give technicians and electricians PLC ladder-logic practice without tying up equipment, and see what each person has proved." };
 
@@ -29,7 +30,8 @@ export default function Employers() {
         lead="Give technicians and electricians PLC practice without tying up a line or a trainer kit. Then see what each of them has proved."
         links={[["Request a pilot", pilotHref()], ["See how teams use it", "#uses"]]} />
       <Section id="uses" title="Where teams use it"><Cards items={USES} /></Section>
-      <Section title="What they practise"><Cards items={PRACTICE} cols="sm:grid-cols-2" /></Section>
+      <CourseSection />
+      <Section title="What they practise in this tool"><Cards items={PRACTICE} cols="sm:grid-cols-2" /></Section>
       <Section id="pilot" title="Start with a pilot" intro={pilotBlurb()}>
         <a href={pilotHref()} className="inline-block rounded-lg bg-cyan-600 px-6 py-3 text-sm font-semibold text-white hover:bg-cyan-500">Request a pilot</a>
       </Section>

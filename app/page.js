@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SITE, pilotHref, pilotBlurb, pricingBlurb } from "@/lib/site";
+import { COURSE } from "@/lib/course";
 export const metadata = { title: `${SITE.name}: practise PLC programming in your browser`, description: "Build ladder logic, watch live machines respond, get instant feedback and earn a verifiable badge. Nothing to install.",
   openGraph: { title: `${SITE.name}: practise PLC programming in your browser`, description: "Build ladder logic, watch live machines respond and prove your skills.", type: "website" } };
 const WHO = [["Learners", "Practise at your own pace with live scenes, hints and progress tracking, on any device with a browser."], ["Trainers & schools", "Create a class, share a code, and see who is stuck. Trainees practise before and after lab sessions."], ["Employers", "Give technicians practice without tying up equipment, then see what each person has proved."]];
@@ -18,6 +19,7 @@ export default function Home() {
         <div className="grid gap-4 sm:grid-cols-3">{WHO.map(([t, d]) => <div key={t} className="rounded-xl border border-slate-800 bg-slate-900 p-5"><h3 className="mb-2 font-bold text-cyan-400">{t}</h3><p className="text-sm text-slate-300">{d}</p></div>)}</div></section>
       <section id="how" className="scroll-mt-20 space-y-4"><h2 className="text-center text-2xl font-bold">Learn it, practise it, prove it</h2>
         <div className="grid gap-4 sm:grid-cols-3">{STEPS.map(([t, d]) => <div key={t} className="rounded-xl border border-slate-800 bg-slate-900 p-5"><h3 className="mb-2 text-lg font-bold text-amber-400">{t}</h3><p className="text-sm text-slate-300">{d}</p></div>)}</div></section>
+      <section className="space-y-2 rounded-2xl border border-slate-800 bg-slate-900 p-6 text-center"><h2 className="text-xl font-bold">Part of the {COURSE.name} at {SITE.venue}</h2><p className="text-sm text-slate-300">PLC practice here, alongside SCADA, drives, mechatronics, hydraulics, instrumentation and more in class. From {COURSE.from}.</p><Link href="/schools#course" className="btn2 inline-block !px-4 !py-2">See the course topics</Link></section>
       {SITE.demo && <section className="space-y-3"><h2 className="text-center text-2xl font-bold">See it in action</h2><video src={SITE.demo} controls preload="metadata" className="mx-auto w-full max-w-3xl rounded-xl border border-slate-800" /></section>}
       <section className="mx-auto max-w-3xl space-y-2"><h2 className="text-center text-2xl font-bold">Questions</h2>
         {FAQ.map(([q, a]) => <details key={q} className="rounded-xl border border-slate-800 bg-slate-900 p-4"><summary className="cursor-pointer font-semibold">{q}</summary><p className="mt-2 text-sm text-slate-300">{a}</p></details>)}</section>

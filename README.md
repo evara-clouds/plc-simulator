@@ -84,3 +84,7 @@ Run `npm test` before opening a pull request. Please report bugs and ideas as is
 
 - **CDACC unit mapping.** The site makes no claim about Kenyan curriculum alignment. Add it only after each problem has been mapped to a unit of competency.
 - **Online payments.** M-Pesa is mentioned as a way to pay; there is no payment integration in the app.
+
+## Editing the course
+
+The course topics, starting price and "why choose us" points live in `lib/course.js`. Only the PLC topic is practised in this tool; the others are labelled as taught in class.
