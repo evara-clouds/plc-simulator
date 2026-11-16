@@ -1,9 +1,4 @@
-node_modules
-.next
-.env
-prisma/*.db*
-
-# Dependencies
+# dependencies
 node_modules/
 
 # Next.js
@@ -11,18 +6,17 @@ node_modules/
 out/
 build/
 
-# Environment secrets
+# environment secrets (never commit real keys)
 .env*
 !.env.example
 
-# Logs
+# logs
 *.log
 npm-debug.log*
 
-# Local databases and generated files
-*.db
-*.sqlite
-*.sqlite3
-
-# OS files
+# editor / OS
 .DS_Store
+
+# backups and scratch files
+*.bak
+*.orig

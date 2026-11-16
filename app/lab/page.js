@@ -161,16 +161,3 @@ export default function Page() {
     </div>
   );
 }
-
-function Lamps({ t, outs }) {
-  return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      {outs.map((o) => (
-        <div key={o} className="flex flex-col items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 p-3">
-          <div className={`h-8 w-8 rounded-full ${t[o] ? "bg-emerald-400 shadow-[0_0_14px_#34d399]" : "bg-slate-700"}`} />
-          <span className="font-mono text-xs">{o}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
